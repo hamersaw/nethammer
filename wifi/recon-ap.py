@@ -15,7 +15,8 @@ def process_packet(pkt):
             ssid = pkt.getlayer(Dot11Elt).info.decode('utf-8')
             if ssid == '' or pkt.getlayer(Dot11Elt).ID != 0:
                 print('"" %s' % (addr), flush=True)
-            print('"%s" %s' % (ssid, addr), flush=True)
+            else:
+                print('"%s" %s' % (ssid, addr), flush=True)
 
 if __name__ == "__main__":
     # parse arguments

@@ -10,4 +10,6 @@ done
 # perform operation
 interface="${args[wifi.interface]}"
 
+ip link set $interface down
 iw dev $interface set type managed
+ip link set $interface up

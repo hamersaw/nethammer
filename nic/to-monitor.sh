@@ -10,4 +10,6 @@ done
 # perform operation
 interface="${args[wifi.interface]}"
 
-iw dev $interface set type monitor
+ip link set $interface down
+iw dev $interface set monitor control
+ip link set $interface up
