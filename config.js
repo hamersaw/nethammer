@@ -29,7 +29,7 @@
             }
         ]
     },
-    "wifi/recon-ap.py" : {
+    "wifi/recon.py" : {
         "description" : "identify wifi APs and clients on NIC",
         "options" : [
             {
@@ -42,6 +42,11 @@
     "wifi/rouge-ap.sh" : {
         "description" : "start a rouge AP with the specified attributes",
         "options" : [
+            {
+                "name" : "wifi.auth.password",
+                "description" : "password for wifi AP",
+                "required" : "false"
+            },
             {
                 "name" : "wifi.interface",
                 "description" : "network interface identifier",

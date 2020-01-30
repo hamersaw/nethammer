@@ -13,53 +13,84 @@ done
 interface="${args[wifi.interface]}"
 channel="${args[wifi.channel]}"
 ssid="${args[wifi.ssid]}"
+wpa_password="${args[wifi.auth.password]}"
+
+# initialize instance variables
+config_dir="/tmp/nethammer-rouge-ap"
+hostapd_config="$config_dir/hostapd.config"
+udhcpd_config="$config_dir/udhcpd.config"
+udhcpd_leases="$config_dir/udhcpd.leases"
+
+mkdir -p $config_dir
+
+# setup script cleanup
+egress() {
+    # unset interface address
+    ip addr del 192.168.69.1/24 dev $interface
+
+    # rollback iptables changes
+    sysctl net.ipv4.ip_forward=0
+    #iptables -t nat -D POSTROUTING -o wlp82s0 -j MASQUERADE
+    #iptables -D FORWARD -i $interface -o wlp82s0 -j ACCEPT
+
+    iptables -D FORWARD -i $interface -o wlp82s0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+    iptables -D FORWARD -i $interface -o wlp82s0 -j ACCEPT
+    iptables -D FORWARD -j REJECT --reject-with icmp-host-prohibited
+    iptables -t nat -D POSTROUTING -o wlp82s0 -j MASQUERADE
+
+    # cleanup tmp directories
+    rm -r $config_dir
+
+    # kill background processes and self
+    trap - SIGTERM
+    kill $(jobs -p) $$
+}
+
+trap egress SIGTERM EXIT
 
 # start hostapd
-hostapd_config="/tmp/nethammer/hostapd.conf"
-mkdir -p $(dirname $hostapd_config)
-
-# TODO - WPA - https://www.pi-point.co.uk/configs-hostapd/wpa-config/
 echo "interface=$interface
 driver=nl80211
 ssid=$ssid
-channel=$channel" > $hostapd_config
+hw_mode=g
+channel=$channel
+macaddr_acl=0
+ignore_broadcast_ssid=0" > $hostapd_config
+
+if [ ! -z "$wpa_password" ]; then
+    echo "auth_algs=1
+wpa=3
+wpa_passphrase=$wpa_password
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP" >> $hostapd_config
+fi
 
 hostapd $hostapd_config &
-hostapd_pid="$!"
-
-# TODO - enable traffic forwarding
-## ENABLE PACKET FORWARDING
-#sysctl net.ipv4.ip_forward=1
-
-## ENABLE NAT
-#systemctl start iptables
-#iptables -t nat -A POSTROUTING -o wlp2s0 -j MASQUERADE
-#iptables -A FORWARD -i wlp0s20u1 -o wlp2s0 -j ACCEPT
-
-#iptables --table nat --append POSTROUTING --out-interface eth0 -j MASQUERADE
-#iptables --append FORWARD --in-interface wlan1mon -j ACCEPT
-#echo 1 > /proc/sys/net/ipv4/ip_forward
 
 # set interface address
-ip addr add 192.168.69.1/24 dev $interface >/dev/null 2>&1
+ip addr add 192.168.69.1/24 dev $interface
+
+# enable traffic forwarding
+sysctl net.ipv4.ip_forward=1
+
+#iptables -t nat -A POSTROUTING -o wlp82s0 -j MASQUERADE
+#iptables -A FORWARD -i $interface -o wlp82s0 -j ACCEPT
+
+iptables -A FORWARD -i $interface -o wlp82s0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A FORWARD -i $interface -o wlp82s0 -j ACCEPT
+iptables -A FORWARD -j REJECT --reject-with icmp-host-prohibited
+iptables -t nat -A POSTROUTING -o wlp82s0 -j MASQUERADE
 
 # setup dhcp server
-udhcpd_config="/tmp/nethammer/udhcpd.conf"
-mkdir -p $(dirname $udhcpd_config)
-
-udhcpd_leases="/tmp/nethammer/udhcpd.leases"
-touch $udhcpd_leases
-
 echo "start		192.168.69.100
 end		    192.168.69.240
 interface	$interface
 lease_file	$udhcpd_leases" > $udhcpd_config
 
-udhcpd -f $udhcpd_config &
-udhcpd_pid="$!"
+touch $udhcpd_leases
 
-# kill children processes when this script closes
-trap "trap - SIGTERM && kill $hostapd_pid $udhcpd_pid $$" SIGINT SIGTERM EXIT
+udhcpd -f $udhcpd_config &
 
 # keep script running indefinitely
 while true; do sleep 1; done
