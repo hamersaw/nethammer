@@ -38,5 +38,25 @@
                 "required" : "true"
             }
         ]
+    },
+    "wifi/rouge-ap.sh" : {
+        "description" : "start a rouge AP with the specified attributes",
+        "options" : [
+            {
+                "name" : "wifi.interface",
+                "description" : "network interface identifier",
+                "required" : "true"
+            },
+            {
+                "name" : "wifi.channel",
+                "description" : "channel for AP",
+                "required" : "true"
+            },
+            {
+                "name" : "wifi.ssid",
+                "description" : "SSID for AP",
+                "required" : "true"
+            }
+        ]
     }
 }

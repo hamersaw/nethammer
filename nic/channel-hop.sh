@@ -7,7 +7,7 @@ for ARG in $@; do
     args["${ARRAY[0]}"]="${ARRAY[1]}"
 done
 
-# perform operation
+# retrieve argument values
 interface="${args[wifi.interface]}"
 
 # start changing channel of nic
