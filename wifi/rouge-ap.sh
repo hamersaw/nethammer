@@ -52,16 +52,16 @@ channel=$channel
 macaddr_acl=0
 ignore_broadcast_ssid=0" > $hostapd_config
 
-#if [ ! -z "$wpa_password" ]; then
-#    echo "auth_algs=1
-#wpa=3
-#wpa_passphrase=$wpa_password
-#wpa_key_mgmt=WPA-PSK
-#wpa_pairwise=TKIP
-#rsn_pairwise=CCMP" >> $hostapd_config
-#fi
+if [ ! -z "$wpa_password" ]; then
+    echo "auth_algs=1
+wpa=2
+wpa_passphrase=$wpa_password
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP" >> $hostapd_config
+fi
 
-hostapd -d $hostapd_config &
+hostapd $hostapd_config &
 
 # set interface address
 ip addr add 192.168.69.1/24 dev $interface
