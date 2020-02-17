@@ -1,9 +1,15 @@
 #!/bin/bash
 
-# TODO - check if host has programs: hostapd, udhcpd, iptables
-
 # load scripter shell library
 source $scripterlibsh
+
+# check if host has required applications installed
+[ ! $(which hostapd) ] \
+    && echo "'hostapd' not found in users PATH" && exit 1
+[ ! $(which udhcpd) ] \
+    && echo "'udhcpd' not found in users PATH" && exit 1
+[ ! $(which iptables) ] \
+    && echo "'iptables' not found in users PATH" && exit 1
 
 # retrieve argument values
 interface=$(get_or_fail "wifi.interface" $@)
