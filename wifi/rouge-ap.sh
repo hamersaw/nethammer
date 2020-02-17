@@ -2,18 +2,15 @@
 
 # TODO - check if host has programs: hostapd, udhcpd, iptables
 
-# parse incoming arguments
-declare -A args
-for ARG in $@; do
-    IFS='=' read -ra ARRAY <<< "$ARG"
-    args["${ARRAY[0]}"]="${ARRAY[1]}"
-done
+# load scripter shell library
+source $scripterlibsh
 
 # retrieve argument values
-interface="${args[wifi.interface]}"
-channel="${args[wifi.channel]}"
-ssid="${args[wifi.ssid]}"
-wpa_password="${args[wifi.auth.password]}"
+interface=$(get_or_fail "wifi.interface" $@)
+[ -z "$interface" ] && echo "option 'wifi.interface' not set" && exit 1
+channel=$(get_or_else "wifi.channel" 7 $@)
+ssid=$(get_or_else "wifi.ssid" "nethammer" $@)
+ssid=$(get_or_fail "wifi.auth.password" $@)
 
 # initialize instance variables
 config_dir="/tmp/nethammer-rouge-ap"

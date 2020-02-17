@@ -1,14 +1,11 @@
 #!/bin/bash
 
-# parse incoming arguments
-declare -A args
-for ARG in $@; do
-    IFS='=' read -ra ARRAY <<< "$ARG"
-    args["${ARRAY[0]}"]="${ARRAY[1]}"
-done
+# load scripter shell library
+source $scripterlibsh
 
 # retrieve argument values
-interface="${args[wifi.interface]}"
+interface=$(get_or_fail "wifi.interface" $@)
+[ -z "$interface" ] && echo "option 'wifi.interface' not set" && exit 1
 
 # start changing channel of nic
 while true; do
