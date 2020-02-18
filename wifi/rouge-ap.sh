@@ -1,7 +1,61 @@
 #!/bin/bash
+#
+# {
+#   "description" : "start a rouge AP with the specified attributes",
+#   "options" : [
+#     {
+#       "name" : "wifi.channel",
+#       "description" : "channel for AP",
+#       "flag" : "c",
+#       "required" : "false",
+#       "default" : 7
+#     },
+#     {
+#       "name" : "wifi.interface",
+#       "description" : "network interface identifier",
+#       "flag" : "i",
+#       "required" : "true"
+#     },
+#     {
+#       "name" : "wifi.auth.password",
+#       "description" : "wpa password for wifi AP",
+#       "flag" : "p",
+#       "required" : "false"
+#     },
+#     {
+#       "name" : "wifi.ssid",
+#       "description" : "SSID for AP",
+#       "flag" : "s",
+#       "required" : "true"
+#     }
+#   ]
+# }
 
-# load scripter shell library
-source $scripterlibsh
+usage="usage $(basename $0) [-c <channel>] -i <interface> \
+[-p <password>] -s <ssid>"
+
+# parse arguments
+channel=7
+while getopts 'c:hi:p:s:' opt; do
+    case ${opt} in
+        c) channel="$OPTARG" ;;
+        h)
+            echo "$usage"
+            exit 0
+            ;;
+        i) interface="$OPTARG" ;;
+        p) password="$OPTARG" ;;
+        s) ssid="$OPTARG" ;;
+        ?)
+            echo "$usage"
+            exit 1
+            ;;
+    esac
+done
+
+# ensure required arguments are set
+[ -z "$interface" ] && echo "$usage" && exit 1
+[ -z "$ssid" ] && echo "$usage" && exit 1
 
 # check if host has required applications installed
 [ ! $(which hostapd) ] \
@@ -10,13 +64,6 @@ source $scripterlibsh
     && echo "'udhcpd' not found in users PATH" && exit 1
 [ ! $(which iptables) ] \
     && echo "'iptables' not found in users PATH" && exit 1
-
-# retrieve argument values
-interface=$(get_or_fail "wifi.interface" $@)
-[ -z "$interface" ] && echo "option 'wifi.interface' not set" && exit 1
-channel=$(get_or_else "wifi.channel" 7 $@)
-ssid=$(get_or_else "wifi.ssid" "nethammer" $@)
-ssid=$(get_or_fail "wifi.auth.password" $@)
 
 # initialize instance variables
 config_dir="/tmp/nethammer-rouge-ap"
@@ -55,10 +102,10 @@ channel=$channel
 macaddr_acl=0
 ignore_broadcast_ssid=0" > $hostapd_config
 
-if [ ! -z "$wpa_password" ]; then
+if [ ! -z "$password" ]; then
     echo "auth_algs=1
 wpa=2
-wpa_passphrase=$wpa_password
+wpa_passphrase=$password
 wpa_key_mgmt=WPA-PSK
 wpa_pairwise=TKIP
 rsn_pairwise=CCMP" >> $hostapd_config

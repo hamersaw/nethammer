@@ -1,5 +1,18 @@
 #!/bin/python3
-import os, sys
+#
+# {
+#   "description" : "identify wifi APs and clients on NIC",
+#   "options" : [
+#     {
+#       "name" : "wifi.interface",
+#       "description" : "network interface identifier",
+#       "flag" : "i",
+#       "required" : "true"
+#     }
+#   ]
+# }
+
+import argparse, os, sys
 from scapy.all import *
 
 bssids = []
@@ -20,11 +33,10 @@ def process_packet(pkt):
 
 if __name__ == "__main__":
     # parse arguments
-    args = {}
-    for arg in sys.argv[1:]:
-        array = arg.split('=')
-        args[array[0]] = array[1]
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--interface', required=True,
+        help='network interface identifier')
+    args = parser.parse_args()
 
     # execute scapy sniffer
-    interface = args['wifi.interface']
-    sniff(iface=interface, prn=process_packet)
+    sniff(iface=args.i, prn=process_packet)
