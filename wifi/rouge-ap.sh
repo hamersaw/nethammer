@@ -60,6 +60,7 @@ done
 # check if host has required applications installed
 [ ! $(which hostapd) ] \
     && echo "'hostapd' not found in users PATH" && exit 1
+[ ! $(which ip) ] && echo "'ip' not found in users PATH" && exit 1
 [ ! $(which udhcpd) ] \
     && echo "'udhcpd' not found in users PATH" && exit 1
 [ ! $(which iptables) ] \

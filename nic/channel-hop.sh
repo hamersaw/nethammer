@@ -41,6 +41,9 @@ done
 # ensure required arguments are set
 [ -z "$interface" ] && echo "$usage" && exit 1
 
+# check if host has required applications installed
+[ ! $(which iw) ] && echo "'iw' not found in users PATH" && exit 1
+
 # start changing channel of nic
 while true; do
     CHANNEL=$((1 + RANDOM % 14))
