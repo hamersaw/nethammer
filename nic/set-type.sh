@@ -4,13 +4,13 @@
 #   "description" : "set network interface type",
 #   "options" : [
 #     {
-#       "name" : "wifi.interface",
+#       "name" : "net.interface",
 #       "description" : "network interface identifier",
 #       "flag" : "i",
 #       "required" : "true"
 #     },
 #     {
-#       "name" : "wifi.interface.type",
+#       "name" : "net.interface.type",
 #       "description" : "NIC type ['managed', 'monitor']",
 #       "flag" : "t",
 #       "required" : "false",

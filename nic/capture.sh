@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # {
-#   "description" : "use tshark to capture traffic from an interface",
+#   "description" : "use dumpcap to capture traffic from an interface",
 #   "options" : [
 #     {
 #       "name" : "net.capture.filter",
@@ -17,9 +17,10 @@
 #     },
 #     {
 #       "name" : "net.capture.file",
-#       "description" : "pcap output file",
+#       "description" : "pcapng output file",
 #       "flag" : "w",
-#       "required" : "false"
+#       "required" : "false",
+#       "default" : "beacon-YYYYmmddHHMMSS.pcapng"
 #     }
 #   ]
 # }
@@ -27,8 +28,8 @@
 usage="usage $(basename $0) -i <interface>"
 
 # parse arguments
-filename="$(pwd)/$(date +%Y%m%d%H%M%S).pcap"
-while getopts 'f:hi:' opt; do
+filename="$(pwd)/$(date +%Y%m%d%H%M%S).pcapng"
+while getopts 'f:hi:w:' opt; do
     case ${opt} in
         f) filter="$OPTARG" ;;
         h)
@@ -48,10 +49,10 @@ done
 [ -z "$interface" ] && echo "$usage" && exit 1
 
 # capture traffic
-args="-i $interface -w $filename"
+args="-i:$interface:-w:$filename"
 if [ ! -z "$filter" ]; then
-    args+=" -f '$filter'"
+    args+=":-f:$filter"
 fi
 
-touch $filename
-tshark $args
+OFS=$IFS; IFS=":"
+dumpcap $args

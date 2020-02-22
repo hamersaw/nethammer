@@ -16,11 +16,9 @@ nic/
 wifi/
     capture/
         beacons.sh
-        wpa-handshake.sh - https://github.com/r-a-w/DriveShake
+        wpa-handshake.sh
     rouge-ap.sh
 
-
-
 ## TODO
-- change variable names for each module - need better scheme
-- implement additional scripts
+- fill out functionality
+- automate wpa handshake capture - https://github.com/r-a-w/DriveShake

@@ -11,7 +11,7 @@
 #       "default" : 7
 #     },
 #     {
-#       "name" : "wifi.interface",
+#       "name" : "net.interface",
 #       "description" : "network interface identifier",
 #       "flag" : "i",
 #       "required" : "true"
