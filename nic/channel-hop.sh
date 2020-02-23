@@ -8,7 +8,7 @@
 #       "description" : "sleep duration (in seconds) between hops",
 #       "flag" : "d",
 #       "required" : "false",
-#       "default" : 1
+#       "default" : 5
 #     },
 #     {
 #       "name" : "net.interface",
@@ -22,7 +22,7 @@
 usage="usage $(basename $0) [-d <duration>] -i <interface>"
 
 # parse arguments
-duration=1
+duration=5
 while getopts 'd:hi:' opt; do
     case ${opt} in
         d) duration="$OPTARG" ;;

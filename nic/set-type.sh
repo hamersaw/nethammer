@@ -23,7 +23,7 @@ usage="usage $(basename $0) -i <interface>"
 
 # parse arguments
 interface_type="monitor"
-while getopts 'hi:' opt; do
+while getopts 'hi:t:' opt; do
     case ${opt} in
         h)
             echo "$usage"

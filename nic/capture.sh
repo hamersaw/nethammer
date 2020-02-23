@@ -25,7 +25,7 @@
 #   ]
 # }
 
-usage="usage $(basename $0) -i <interface>"
+usage="usage $(basename $0) [-f <filter>] -i <interface> [-w <filename>]"
 
 # parse arguments
 filename="$(pwd)/$(date +%Y%m%d%H%M%S).pcapng"
