@@ -12,3 +12,4 @@ A [scripter](https://github.com/hamersaw/scripter) repository for network penetr
 ## TODO
 - fill out functionality
 - automate wpa handshake capture - https://github.com/r-a-w/DriveShake
+- add wifi.auth.type to wifi/rouge-ap.sh
